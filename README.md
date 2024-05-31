@@ -145,24 +145,6 @@ deployment:
 
 vm:
   wordpressBe:
-    name: wordpress-be
-    template: windows2k22-server-medium
-    flavor: medium
-    os: windows2k22
-    workload: server
-    size: medium
-    running: true
-    installationCdromUrl: 'http://example.com/win2022.iso'
-    installationCdromStorageClass: odf-nvme-2-replicas
-    installationCdromStorage: 20Gi
-    rootDiskStorageClass: vm-odf-hdd-3-replicas
-    rootDiskStorage: 120Gi
-    cpuCores: 4
-    cpuSockets: 1
-    cpuThreads: 1
-    memory: 16Gi
-    windowsDriversDiskImage: 'registry.redhat.io/container-native-virtualization/virtio-win-rhel9@sha256:a8d455491d6c1ff45c6d8d340aa804313ce5613a59f53c7f4a5fcb61c14cc9fc'
-    machineType: pc-q35-rhel9.2.0
     name: wordpress-be  # Name of the VirtualMachine for WordPress back-end
     template: windows2k22-server-medium  # Template for the Windows VM
     flavor: medium  # Flavor for the Windows VM
