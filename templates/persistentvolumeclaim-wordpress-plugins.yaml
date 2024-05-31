@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pvc.wordpressPlugins.name }}
+  namespace: {{ .Values.namespace.name }}
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-weight": "6"
+spec:
+  accessModes:
+  - {{ .Values.pvc.wordpressPlugins.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.wordpressPlugins.storage }}
+  storageClassName: {{ .Values.pvc.wordpressPlugins.storageClassName }}
+  volumeMode: {{ .Values.pvc.wordpressPlugins.volumeMode }}

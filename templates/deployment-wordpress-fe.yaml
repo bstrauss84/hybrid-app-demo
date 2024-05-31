@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/part-of: wordpress-demo
+  name: {{ .Values.deployment.wordpressFe.name }}
+  namespace: {{ .Values.namespace.name }}
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-weight": "8"
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.deployment.wordpressFe.replicas }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: wordpress-fe
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: wordpress-fe
+    spec:
+      containers:
+      - env:
+        - name: WORDPRESS_DB_HOST
+          value: {{ .Values.service.wordpressBe.name }}
+        - name: WORDPRESS_DB_USER
+          value: {{ .Values.deployment.wordpressFe.dbUser }}
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: wordpress-db-password
+              name: {{ .Values.secret.wordpressDb.name }}
+        - name: WORDPRESS_DB_NAME
+          value: {{ .Values.deployment.wordpressFe.dbName }}
+        - name: HTTP_X_FORWARDED_PROTO
+          value: http,https
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.configMap.wordpressFeConfig.name }}
+        image: {{ .Values.deployment.wordpressFe.image }}
+        imagePullPolicy: Always
+        name: wordpress
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/www/html/wp-content
+          name: wordpress-plugins
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: {{ .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: wordpress-plugins
+        persistentVolumeClaim:
+          claimName: {{ .Values.pvc.wordpressPlugins.name }}

@@ -1,0 +1,371 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMap.sysprepWindows.name }}
+  namespace: {{ .Values.namespace.name }}
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-weight": "-1"
+data:
+  Autounattend.xml: |-
+    <?xml version="1.0" encoding="utf-8"?>
+    <unattend xmlns="urn:schemas-microsoft-com:unattend">
+        <!-- Windows PE phase -->
+        <settings pass="windowsPE">
+            <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <!-- Disk configuration and installation settings -->
+                <DiskConfiguration>
+                    <Disk wcm:action="add">
+                        <CreatePartitions>
+                            <CreatePartition wcm:action="add">
+                                <Order>1</Order>
+                                <Size>100</Size>
+                                <Type>EFI</Type>
+                            </CreatePartition>
+                            <CreatePartition wcm:action="add">
+                                <Order>2</Order>
+                                <Size>128</Size>
+                                <Type>MSR</Type>
+                            </CreatePartition>
+                            <CreatePartition wcm:action="add">
+                                <Order>3</Order>
+                                <Extend>true</Extend>
+                                <Type>Primary</Type>
+                            </CreatePartition>
+                        </CreatePartitions>
+                        <ModifyPartitions>
+                            <ModifyPartition wcm:action="add">
+                                <Format>FAT32</Format>
+                                <Label>System</Label>
+                                <Order>1</Order>
+                                <PartitionID>1</PartitionID>
+                            </ModifyPartition>
+                            <ModifyPartition wcm:action="add">
+                                <Order>2</Order>
+                                <PartitionID>2</PartitionID>
+                            </ModifyPartition>
+                            <ModifyPartition wcm:action="add">
+                                <Order>3</Order>
+                                <PartitionID>3</PartitionID>
+                                <Letter>C</Letter>
+                                <Label>OS</Label>
+                                <Format>NTFS</Format>
+                            </ModifyPartition>
+                        </ModifyPartitions>
+                        <DiskID>0</DiskID>
+                        <WillWipeDisk>true</WillWipeDisk>
+                    </Disk>
+                </DiskConfiguration>
+                <ImageInstall>
+                    <OSImage>
+                        <InstallFrom>
+                            <MetaData>
+                                <Key>/IMAGE/INDEX</Key>
+                                <Value>2</Value>
+                            </MetaData>
+                        </InstallFrom>
+                        <InstallTo>
+                            <DiskID>0</DiskID>
+                            <PartitionID>3</PartitionID>
+                        </InstallTo>
+                    </OSImage>
+                </ImageInstall>
+                <UserData>
+                    <AcceptEula>true</AcceptEula>
+                    <FullName>{{ .Values.configMap.sysprepWindows.autounattend.FullName }}</FullName>
+                    <Organization>{{ .Values.configMap.sysprepWindows.autounattend.Organization }}</Organization>
+                    <ProductKey>
+                        <Key>{{ .Values.configMap.sysprepWindows.autounattend.ProductKey }}</Key>
+                    </ProductKey>
+                </UserData>
+                <EnableFirewall>true</EnableFirewall>
+            </component>
+            <component name="Microsoft-Windows-PnpCustomizationsWinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <DriverPaths>
+                    <PathAndCredentials wcm:action="add" wcm:keyValue="1">
+                        <Path>E:\</Path>
+                    </PathAndCredentials>
+                </DriverPaths>
+            </component>
+            <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <SetupUILanguage>
+                    <UILanguage>en-US</UILanguage>
+                </SetupUILanguage>
+                <InputLocale>0c09:00000409</InputLocale>
+                <SystemLocale>en-US</SystemLocale>
+                <UILanguage>en-US</UILanguage>
+                <UILanguageFallback>en-US</UILanguageFallback>
+                <UserLocale>en-US</UserLocale>
+            </component>
+        </settings>
+        <!-- Offline Servicing phase -->
+        <settings pass="offlineServicing">
+            <component name="Microsoft-Windows-LUA-Settings" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <EnableLUA>false</EnableLUA>
+            </component>
+        </settings>
+        <!-- Generalize phase -->
+        <settings pass="generalize">
+            <component name="Microsoft-Windows-Security-SPP" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <SkipRearm>1</SkipRearm>
+            </component>
+        </settings>
+        <!-- Specialize phase -->
+        <settings pass="specialize">
+            <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <InputLocale>0409:00000409</InputLocale>
+                <SystemLocale>en-US</SystemLocale>
+                <UILanguage>en-US</UILanguage>
+                <UILanguageFallback>en-US</UILanguageFallback>
+                <UserLocale>en-US</UserLocale>
+            </component>
+            <component name="Microsoft-Windows-Security-SPP-UX" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <SkipAutoActivation>true</SkipAutoActivation>
+            </component>
+            <component name="Microsoft-Windows-SQMApi" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <CEIPEnabled>0</CEIPEnabled>
+            </component>
+            <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <ComputerName>{{ .Values.configMap.sysprepWindows.autounattend.ComputerName }}</ComputerName>
+                <ProductKey>{{ .Values.configMap.sysprepWindows.autounattend.ProductKey }}</ProductKey>
+            </component>
+        </settings>
+        <!-- OOBE System phase -->
+        <settings pass="oobeSystem">
+            <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <AutoLogon>
+                    <Password>
+                        <Value>{{ .Values.configMap.sysprepWindows.autounattend.Password }}</Value>
+                        <PlainText>true</PlainText>
+                    </Password>
+                    <Enabled>true</Enabled>
+                    <Username>{{ .Values.configMap.sysprepWindows.autounattend.Username }}</Username>
+                </AutoLogon>
+                <OOBE>
+                    <HideEULAPage>true</HideEULAPage>
+                    <HideLocalAccountScreen>true</HideLocalAccountScreen>
+                    <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+                    <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+                    <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+                    <NetworkLocation>Work</NetworkLocation>
+                    <ProtectYourPC>3</ProtectYourPC>
+                    <SkipMachineOOBE>true</SkipMachineOOBE>
+                    <SkipUserOOBE>true</SkipUserOOBE>
+                </OOBE>
+                <RegisteredOrganization>{{ .Values.configMap.sysprepWindows.autounattend.Organization }}</RegisteredOrganization>
+                <RegisteredOwner>{{ .Values.configMap.sysprepWindows.autounattend.Owner }}</RegisteredOwner>
+                <DisableAutoDaylightTimeSet>false</DisableAutoDaylightTimeSet>
+                <TimeZone>{{ .Values.configMap.sysprepWindows.autounattend.TimeZone }}</TimeZone>
+                <FirstLogonCommands>
+                    <SynchronousCommand wcm:action="add">
+                        <Order>1</Order>
+                        <Description>Execute final powershell</Description>
+                        <RequiresUserInput>false</RequiresUserInput>
+                        <CommandLine>powershell -ExecutionPolicy Bypass -NoExit -NoProfile F:\post-install.ps1</CommandLine>
+                    </SynchronousCommand>
+                </FirstLogonCommands>
+                <UserAccounts>
+                    <AdministratorPassword>
+                        <Value>{{ .Values.configMap.sysprepWindows.autounattend.Password }}</Value>
+                        <PlainText>true</PlainText>
+                    </AdministratorPassword>
+                    <LocalAccounts>
+                        <LocalAccount wcm:action="add">
+                            <Description>{{ .Values.configMap.sysprepWindows.autounattend.LocalAccountDescription }}</Description>
+                            <DisplayName>{{ .Values.configMap.sysprepWindows.autounattend.LocalAccountDisplayName }}</DisplayName>
+                            <Group>{{ .Values.configMap.sysprepWindows.autounattend.LocalAccountGroup }}</Group>
+                            <Name>{{ .Values.configMap.sysprepWindows.autounattend.LocalAccountName }}</Name>
+                        </LocalAccount>
+                    </LocalAccounts>
+                </UserAccounts>
+            </component>
+        </settings>
+    </unattend>
+  post-install.ps1: |-
+    function Invoke-WebRequestWithRetry {
+        param (
+            [string]$Uri,
+            [string]$OutFile,
+            [int]$RetryCount = 5,
+            [int]$RetryDelay = 10
+        )
+    
+        $attempt = 0
+        while ($attempt -lt $RetryCount) {
+            try {
+                Write-Host "Attempting download ($($attempt + 1)/$RetryCount): $Uri"
+                Invoke-WebRequest -Uri $Uri -OutFile $OutFile -ErrorAction Stop
+                Write-Host "Download succeeded: $Uri"
+                return
+            } catch {
+                Write-Host "Attempt $($attempt + 1) failed: $_.Exception.Message"
+                Start-Sleep -Seconds $RetryDelay
+                $attempt++
+            }
+        }
+    
+        throw "Failed to download $Uri after $RetryCount attempts."
+    }
+    
+    # Uncomment below line for Debugging and Troubleshooting
+    #Set-PSDebug -Trace 1
+    #####################################
+    # Perform some basic configurations #
+    #####################################
+    Write-Host "Performing some basic configurations"
+    # Configure legacy control panel view
+    Start-Process reg -Wait -ArgumentList 'add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" /v StartupPage /t REG_DWORD /d 1 /f'
+    # Modify control panel icon size
+    Start-Process reg -Wait -ArgumentList 'add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\ControlPanel" /v AllItemsIconView /t REG_DWORD /d 0 /f'
+    # Prevent password expiration
+    Start-Process wmic -Wait -ArgumentList 'useraccount where name="{{ .Values.configMap.sysprepWindows.autounattend.LocalAccountName }}" set PasswordExpires=false'
+    
+    Write-Host "Setting all network profiles to private"
+    $networkProfile = Get-NetConnectionProfile
+    Set-NetConnectionProfile -InterfaceAlias $networkProfile.InterfaceAlias -NetworkCategory Public
+    Write-Host "Renaming network adapters"
+    $networks = Get-NetAdapter
+    foreach ($network in $networks) {
+        try {
+            $dnsSuffix = (Get-DnsClient -InterfaceAlias $network.Name | Select-Object -ExpandProperty ConnectionSpecificSuffix)
+            if ($dnsSuffix -like 'airgap*') {
+                $newName = "Airgap Network"
+            } elseif ($dnsSuffix -like 'dota-lab*') {
+                $newName = "Lab Network"
+            } elseif ($dnsSuffix -like '*.svc.cluster.local') {
+                $newName = "Pod Network"
+            } else {
+                $newName = $null
+            }
+            if ($newName) {
+                Rename-NetAdapter -Name $network.Name -NewName $newName
+                Write-Host "Renamed $($network.Name) to $newName"
+            }
+        } catch {
+            Write-Host "An error occurred while processing $($network.Name), but continuing to the next command."
+        }
+    }
+    Write-Host "Installing additional drivers"
+    # Install all remaining VirtIO drivers
+    Start-Process msiexec -Wait -ArgumentList '/i E:\virtio-win-gt-x64.msi /qn /passive /norestart'
+    # Install VirtIO Guest Tools
+    Start-Process msiexec -Wait -ArgumentList '/i E:\virtio-win-guest-tools.exe /qn /passive /norestart'
+    # Install qemu Guest Agent
+    Start-Process msiexec -Wait -ArgumentList '/i E:\guest-agent\qemu-ga-x86_64.msi /qn /passive /norestart'
+    # Install winfsp Guest Agent
+    Start-Process msiexec -Wait -ArgumentList '/i E:\winfsp-1.12.22339.msi /qn /passive /norestart'
+    Write-Host "Enabling RDP"
+    # Enable RDP
+    Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
+    Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+    #####################################
+    # Perform custom post-install steps #
+    #####################################
+    Write-Host "Performing custom setup"
+    Write-Host "Downloading MySQL Installer - Please be patient, this may take a few minutes..."
+    Invoke-WebRequestWithRetry -Uri '{{ .Values.configMap.sysprepWindows.postInstall.mysqlInstallerUri }}' -OutFile "$env:USERPROFILE\Downloads\{{ .Values.configMap.sysprepWindows.postInstall.mysqlInstallerFile }}"
+    Write-Host "Downloading Visual Studio 2019 Redistributables"
+    Invoke-WebRequestWithRetry -Uri '{{ .Values.configMap.sysprepWindows.postInstall.vcRedistributablesUri }}' -OutFile "$env:USERPROFILE\Downloads\{{ .Values.configMap.sysprepWindows.postInstall.vcRedistributablesFile }}"
+    Write-Host "Installing Visual Studio 2019 Redistributables"
+    Start-Process -FilePath "$env:USERPROFILE\Downloads\{{ .Values.configMap.sysprepWindows.postInstall.vcRedistributablesFile }}" -ArgumentList '/install', '/quiet', '/norestart' -Wait -PassThru
+    Write-Host "Installing MySQL"
+    Start-Process -FilePath 'msiexec.exe' -ArgumentList "/i $env:USERPROFILE\Downloads\{{ .Values.configMap.sysprepWindows.postInstall.mysqlInstallerFile }} /qn" -Wait -PassThru
+    Write-Host "Creating MySQL Data Directory"
+    # Ensure the MySQL data directory exists
+    New-Item -ItemType Directory -Force -Path "{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseDataDir }}\Data"
+    New-Item -ItemType Directory -Force -Path "{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseDataDir }}\Uploads"
+    Write-Host "Copying MySQL Configuration File"
+    # Copy the my.ini file to the appropriate directory
+    Copy-Item -Path "F:\my.ini" -Destination "{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseDataDir }}\my.ini" -Force
+    Write-Host "Initializing MySQL Data Directory"
+    # Initialize the MySQL data directory
+    Start-Process -FilePath "{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseInstallDir }}\bin\mysqld.exe" -ArgumentList "--initialize-insecure --basedir=`"{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseInstallDir }}`" --datadir=`"{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseDataDir }}\Data`"" -Wait -PassThru
+    Write-Host "Creating MySQL Service"
+    # Create the MySQL service with the new configuration file
+    Start-Process -FilePath "{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseInstallDir }}\bin\mysqld.exe" -ArgumentList "--install {{ .Values.configMap.sysprepWindows.postInstall.mysqlServiceName }} --defaults-file=`"{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseDataDir }}\my.ini`"" -Wait -PassThru
+    Write-Host "Initializing MySQL Data Directory"
+    # Initialize the MySQL data directory
+    & "{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseInstallDir }}\bin\mysqld.exe" --initialize-insecure --basedir="{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseInstallDir }}" --datadir="{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseDataDir }}\Data"
+    Write-Host "Creating MySQL Service"
+    # Create the MySQL service with the new configuration file
+    & "{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseInstallDir }}\bin\mysqld.exe" --install {{ .Values.configMap.sysprepWindows.postInstall.mysqlServiceName }} --defaults-file="{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseDataDir }}\my.ini"
+    
+    Write-Host "Allowing MySQL traffic through firewall"
+    # Allow MySQL traffic through the firewall
+    New-NetFirewallRule -DisplayName "{{ .Values.configMap.sysprepWindows.postInstall.firewallRuleDisplayName }}" -Direction Inbound -Protocol TCP -LocalPort 3306 -Action Allow
+    Write-Host "Starting MySQL Service"
+    # Start the MySQL service
+    Start-Service -Name "{{ .Values.configMap.sysprepWindows.postInstall.mysqlServiceName }}"
+    Write-Host "Configuring MySQL"
+    # Wait for MySQL service to be available
+    Start-Sleep -Seconds 10
+    Write-Host "Executing provided SQL file"
+    # Execute the provided SQL file
+    & "{{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseInstallDir }}\bin\mysql.exe" -u root -e "source F:\mysql_setup.sql"
+    {{- if .Values.configMap.sysprepWindows.postInstall.additionalScripts }}
+    Write-Host "Running Additional Custom Scripts"
+    {{- range $script := .Values.configMap.sysprepWindows.postInstall.additionalScripts }}
+    & $script
+    {{- end }}
+    Write-Host "Additional Custom Scripts Completed"
+    {{- end }}
+    Write-Host "Custom setup completed"
+  my.ini: |-
+    [client]
+    port=3306
+    [mysql]
+    no-beep
+    [mysqld]
+    port=3306
+    datadir={{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseDataDir }}\Data
+    default-storage-engine=INNODB
+    sql-mode="ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+    log-output=FILE
+    general-log=0
+    general_log_file={{ .Values.configMap.sysprepWindows.myIni.slowQueryLogFile }}
+    slow-query-log=1
+    slow_query_log_file={{ .Values.configMap.sysprepWindows.myIni.slowQueryLogFile }}
+    long_query_time=10
+    log-error={{ .Values.configMap.sysprepWindows.myIni.logErrorFile }}
+    log-bin={{ .Values.configMap.sysprepWindows.myIni.logBinFile }}
+    server-id=1
+    lower_case_table_names=1
+    secure-file-priv={{ .Values.configMap.sysprepWindows.postInstall.mysqlBaseDataDir }}\Uploads
+    max_connections=151
+    table_open_cache=4000
+    temptable_max_ram=1G
+    tmp_table_size=705M
+    internal_tmp_mem_storage_engine=TempTable
+    myisam_max_sort_file_size=2146435072
+    myisam_sort_buffer_size=2G
+    key_buffer_size=8M
+    read_buffer_size=128K
+    read_rnd_buffer_size=256K
+    innodb_flush_log_at_trx_commit=1
+    innodb_log_buffer_size=16M
+    innodb_buffer_pool_size=128M
+    innodb_redo_log_capacity=100M
+    innodb_thread_concurrency=9
+    innodb_autoextend_increment=64
+    innodb_buffer_pool_instances=8
+    innodb_concurrency_tickets=5000
+    innodb_old_blocks_time=1000
+    innodb_stats_on_metadata=0
+    innodb_file_per_table=1
+    innodb_checksum_algorithm=0
+    flush_time=0
+    join_buffer_size=256K
+    max_allowed_packet=64M
+    max_connect_errors=100
+    open_files_limit=8161
+    sort_buffer_size=256K
+    binlog_row_event_max_size=8K
+    sync_source_info=10000
+    sync_relay_log=10000
+    loose_mysqlx_port=33060
+  mysql_setup.sql: |-
+    ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ .Values.configMap.sysprepWindows.autounattend.Password }}';
+    CREATE USER '{{ .Values.deployment.wordpressFe.dbUser }}'@'%' IDENTIFIED BY '{{ .Values.configMap.sysprepWindows.autounattend.Password }}';
+    CREATE DATABASE {{ .Values.deployment.wordpressFe.dbName }};
+    GRANT ALL PRIVILEGES ON {{ .Values.deployment.wordpressFe.dbName }}.* TO '{{ .Values.deployment.wordpressFe.dbUser }}'@'%';
+    FLUSH PRIVILEGES;

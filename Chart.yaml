@@ -1,0 +1,9 @@
+apiVersion: v2
+name: wordpress-demo
+description: A Helm chart for deploying a hybrid WordPress demo environment with containerized frontend and cache services, and a Windows VM & MySQL Database backend.
+type: application
+version: 0.1.0
+appVersion: "1.0"
+maintainers:
+  - name: Bill Strauss
+    email: bistraus@redhat.com

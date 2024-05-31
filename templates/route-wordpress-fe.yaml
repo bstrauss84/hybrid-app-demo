@@ -1,0 +1,22 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ .Values.route.wordpressFe.name }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    app.kubernetes.io/part-of: wordpress-demo
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-weight": "10"
+spec:
+  host: {{ .Values.route.wordpressFe.host }}
+  to:
+    kind: Service
+    name: {{ .Values.service.wordpressFe.name }}
+    weight: 100
+  port:
+    targetPort: 80
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

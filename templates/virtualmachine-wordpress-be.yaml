@@ -1,0 +1,144 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  labels:
+    app: wordpress-be
+    app.kubernetes.io/part-of: wordpress-demo
+    vm.kubevirt.io/template: {{ .Values.vm.wordpressBe.template }}
+    vm.kubevirt.io/template.namespace: openshift
+    vm.kubevirt.io/template.revision: '1'
+    vm.kubevirt.io/template.version: v0.26.0
+  name: {{ .Values.vm.wordpressBe.name }}
+  namespace: {{ .Values.namespace.name }}
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-weight": "9"
+spec:
+  dataVolumeTemplates:
+    - metadata:
+        creationTimestamp: null
+        name: wordpress-be-installation-cdrom
+      spec:
+        source:
+          http:
+            url: '{{ .Values.vm.wordpressBe.installationCdromUrl }}'
+        storage:
+          resources:
+            requests:
+              storage: {{ .Values.vm.wordpressBe.installationCdromStorage }}
+          storageClassName: {{ .Values.installationCdromStorageClass }}
+    - metadata:
+        creationTimestamp: null
+        name: wordpress-be
+      spec:
+        preallocation: false
+        source:
+          blank: {}
+        storage:
+          resources:
+            requests:
+              storage: {{ .Values.vm.wordpressBe.rootDiskStorage }}
+          storageClassName: {{ .Values.rootDiskStorageClass }}
+  running: {{ .Values.vm.wordpressBe.running }}
+  template:
+    metadata:
+      annotations:
+        vm.kubevirt.io/flavor: {{ .Values.vm.wordpressBe.flavor }}
+        vm.kubevirt.io/os: {{ .Values.vm.wordpressBe.os }}
+        vm.kubevirt.io/workload: {{ .Values.vm.wordpressBe.workload }}
+      creationTimestamp: null
+      labels:
+        kubevirt.io/domain: wordpress-be
+        kubevirt.io/size: {{ .Values.vm.wordpressBe.size }}
+    spec:
+      architecture: amd64
+      domain:
+        clock:
+          timer:
+            hpet:
+              present: false
+            hyperv: {}
+            pit:
+              tickPolicy: delay
+            rtc:
+              tickPolicy: catchup
+          utc: {}
+        cpu:
+          cores: {{ .Values.vm.wordpressBe.cpuCores }}
+          sockets: {{ .Values.vm.wordpressBe.cpuSockets }}
+          threads: {{ .Values.vm.wordpressBe.cpuThreads }}
+        devices:
+          disks:
+            - bootOrder: 1
+              disk:
+                bus: scsi
+              name: rootdisk
+            - bootOrder: 2
+              cdrom:
+                bus: sata
+              name: installation-cdrom
+            - cdrom:
+                bus: sata
+              name: windows-drivers-disk
+            - cdrom:
+                bus: sata
+              name: sysprep
+          inputs:
+            - bus: usb
+              name: tablet
+              type: tablet
+          interfaces:
+            - bridge: {}
+              model: e1000e
+              name: podnet
+              ports:
+              - name: rdp
+                protocol: TCP
+                port: 3389
+          tpm: {}
+        features:
+          acpi: {}
+          apic: {}
+          hyperv:
+            frequencies: {}
+            ipi: {}
+            reenlightenment: {}
+            relaxed: {}
+            reset: {}
+            runtime: {}
+            spinlocks:
+              spinlocks: 8191
+            synic: {}
+            synictimer:
+              direct: {}
+            tlbflush: {}
+            vapic: {}
+            vpindex: {}
+          smm: {}
+        firmware:
+          bootloader:
+            efi:
+              secureBoot: true
+        machine:
+          type: {{ .Values.vm.wordpressBe.machineType }}
+        memory:
+          guest: {{ .Values.vm.wordpressBe.memory }}
+        resources: {}
+      networks:
+        - name: podnet
+          pod: {}
+      terminationGracePeriodSeconds: 3600
+      volumes:
+        - dataVolume:
+            name: wordpress-be
+          name: rootdisk
+        - dataVolume:
+            name: wordpress-be-installation-cdrom
+          name: installation-cdrom
+        - containerDisk:
+            image: '{{ .Values.vm.wordpressBe.windowsDriversDiskImage }}'
+          name: windows-drivers-disk
+        - name: sysprep
+          sysprep:
+            configMap:
+              name: {{ .Values.configMap.sysprepWindows.name }}
