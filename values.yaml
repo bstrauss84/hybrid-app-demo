@@ -1,5 +1,5 @@
-namespace:
-  name: demo-hybrid  # The namespace where the resources will be deployed
+#namespace:
+#  name: demo-hybrid  # The namespace where the resources will be deployed
 
 serviceAccount:
   name: hybrid-app-sa  # Name of the ServiceAccount to be created

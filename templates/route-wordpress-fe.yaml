@@ -2,7 +2,7 @@ kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
   name: {{ .Values.route.wordpressFe.name }}
-  namespace: {{ .Values.namespace.name }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/part-of: wordpress-demo
   annotations:
