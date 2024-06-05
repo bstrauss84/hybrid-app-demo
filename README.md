@@ -20,17 +20,39 @@ The architecture leverages the strengths of both containerized and VM-based work
 - **Windows Server Backend**: Hosts the MySQL database that stores WordPress data.
 - **Redis Cache**: Enhances performance by caching frequently accessed data.
 
+## Prerequisites
+
+- **Must have access to an OpenShift v4.12 (or newer) cluster**: See official Red Hat documentation for deploying and configuring OpenShift.
+- **Must have OpenShift Virtualization installed and configured on your OpenShift Cluster**: See official Red Hat documentation for deploying and configuring OpenShift Virtualization.
+- **Must have Git installed locally**: See [https://github.com/git-guides/install-git](https://github.com/git-guides/install-git) for installation instructions.
+- **Must have Helm installed locally**: See [https://helm.sh/docs/intro/install/](https://helm.sh/docs/intro/install/) for installation instructions.
+- **Must be able to authenticate to the OpenShift cluster from your local machine, with a user that has the permissions to create namespaces and namespaced resources**: See official Red Hat documentation for configuring and using OpenShift authentication and authorization. 
+
 ## Deployment Instructions
 
 1. **Clone the Repository**
     ```sh
-    git clone https://github.com/your-repo/hybrid-app-demo.git
+    git clone https://github.com/bstrauss84/hybrid-app-demo.git
     cd hybrid-app-demo
     ```
 
-2. **Install the Application with Helm**
+2. **Option 1: Install the Application with Helm**
     ```sh
     helm install helm-deploy-hybrid-app . --namespace demo-hybrid --create-namespace
+    ```
+
+    **OR**
+
+   **Option 2: Install the Application with Helm, Overriding Key Parameters in the values.yaml File**
+    ```sh
+    helm install helm-deploy-hybrid-app . \
+      --namespace demo-hybrid --create-namespace \
+      --set configMap.sysprepWindows.autounattend.ProductKey="ABCDE-FGHIJ-KLMNO-PQRST-UVWXY" \
+      --set configMap.sysprepWindows.autounattend.Password="mysupersecurepassword1" \
+      --set configMap.sysprepWindows.postInstall.mysqlInstallerUri="https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.0-winx64.msi" \
+      --set configMap.sysprepWindows.postInstall.vcRedistributablesUri="https://aka.ms/vs/17/release/vc_redist.x64.exe" \
+      --set vm.wordpressBe.installationCdromUrl="http://my-example-web-server.com/win2022.iso" \
+      --set route.wordpressFe.host=wordpress-hybrid.apps.some.ocp.cluster.com
     ```
 
 ## Next Steps
@@ -91,8 +113,8 @@ configMap:
       LocalAccountName: "Administrator"  # Name for the local admin account
       Username: "Administrator"  # Username for the local admin account
     postInstall:
-      mysqlInstallerUri: "http://example.com/mysql-8.4.0-winx64.msi"  # URI to download MySQL installer
-      vcRedistributablesUri: "http://example.com/VC_redist.x64.exe"  # URI to download Visual Studio Redistributables
+      mysqlInstallerUri: "[https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.0-winx64.msi](https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.0-winx64.msi)"  # URI to download MySQL installer
+      vcRedistributablesUri: "[http://example.com/VC_redist.x64.exe](https://aka.ms/vs/17/release/vc_redist.x64.exe)"  # URI to download Visual Studio Redistributables
       mysqlInstallerFile: "mysql-8.4.0-winx64.msi"  # File name for MySQL installer
       vcRedistributablesFile: "vc_redist.x64.exe"  # File name for Visual Studio Redistributables
       mysqlBaseDataDir: 'C:\ProgramData\MySQL\MySQL Server 8.0'  # Base data directory for MySQL
