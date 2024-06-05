@@ -24,9 +24,13 @@ The architecture leverages the strengths of both containerized and VM-based work
 
 - **Must have access to an OpenShift v4.12 (or newer) cluster**: See official Red Hat documentation for deploying and configuring OpenShift.
 - **Must have OpenShift Virtualization installed and configured on your OpenShift Cluster**: See official Red Hat documentation for deploying and configuring OpenShift Virtualization.
+- **Must be able to authenticate to the OpenShift cluster from your local machine, with a user that has the permissions to create namespaces and namespaced resources**: See official Red Hat documentation for configuring and using OpenShift authentication and authorization. 
 - **Must have Git installed locally**: See [https://github.com/git-guides/install-git](https://github.com/git-guides/install-git) for installation instructions.
 - **Must have Helm installed locally**: See [https://helm.sh/docs/intro/install/](https://helm.sh/docs/intro/install/) for installation instructions.
-- **Must be able to authenticate to the OpenShift cluster from your local machine, with a user that has the permissions to create namespaces and namespaced resources**: See official Red Hat documentation for configuring and using OpenShift authentication and authorization. 
+- **Must have access to the latest versions of the MySQL and Visual Studios Redistributables installation files**: You can either host them on a local web server or, if you have Internet access, you can use the download links for the respective installer.  At the time of this writing, these links were [https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.0-winx64.msi](https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.0-winx64.msi) and [https://aka.ms/vs/17/release/vc_redist.x64.exe](https://aka.ms/vs/17/release/vc_redist.x64.exe) respectively.
+- ** Must have access to a downloadable Windows Server 2k22 ISO**: Again, you can host locally on a web server, or obtain a download link from Microsoft.
+  **Note**: In theory, this solution may work with other versions of Windows with some minor modifications to the values.yaml contents, though at the time of this writing, I have not tested this solution with any other version.
+- ** Must have access to a valid Windows Product Key**: Please refer to official Microsoft documentation for details on how to obtain a Product Key.
 
 ## Deployment Instructions
 
