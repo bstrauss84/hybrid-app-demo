@@ -117,8 +117,8 @@ configMap:
       LocalAccountName: "Administrator"  # Name for the local admin account
       Username: "Administrator"  # Username for the local admin account
     postInstall:
-      mysqlInstallerUri: "[https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.0-winx64.msi](https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.0-winx64.msi)"  # URI to download MySQL installer
-      vcRedistributablesUri: "[http://example.com/VC_redist.x64.exe](https://aka.ms/vs/17/release/vc_redist.x64.exe)"  # URI to download Visual Studio Redistributables
+      mysqlInstallerUri: "https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.0-winx64.msi"  # URI to download MySQL installer
+      vcRedistributablesUri: "https://aka.ms/vs/17/release/vc_redist.x64.exe"  # URI to download Visual Studio Redistributables
       mysqlInstallerFile: "mysql-8.4.0-winx64.msi"  # File name for MySQL installer
       vcRedistributablesFile: "vc_redist.x64.exe"  # File name for Visual Studio Redistributables
       mysqlBaseDataDir: 'C:\ProgramData\MySQL\MySQL Server 8.0'  # Base data directory for MySQL
