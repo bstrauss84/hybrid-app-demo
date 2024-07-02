@@ -88,13 +88,15 @@ spec:
               name: tablet
               type: tablet
           interfaces:
-            - bridge: {}
-              model: e1000e
-              name: podnet
-              ports:
-              - name: rdp
-                protocol: TCP
-                port: 3389
+            - name: podnet
+              masquerade: {}
+              model: virtio
+              #bridge: {}
+              #model: e1000e
+              #ports:
+              #- name: rdp
+              #  protocol: TCP
+              #  port: 3389
           tpm: {}
         features:
           acpi: {}

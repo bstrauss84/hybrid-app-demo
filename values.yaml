@@ -64,14 +64,14 @@ pvc:
     name: redis-data-pvc  # Name of the PersistentVolumeClaim for Redis data
     accessMode: ReadWriteOnce  # Access mode for the PVC
     storage: 10Gi  # Storage size for the PVC
-    storageClassName: odf-nvme-2-replicas  # Storage class name for the PVC
+    storageClassName: ocs-storagecluster-ceph-rbd  # Storage class name for the PVC
     volumeMode: Filesystem  # Volume mode for the PVC
 
   wordpressPlugins:
     name: wordpress-plugins-pvc  # Name of the PersistentVolumeClaim for WordPress plugins
     accessMode: ReadWriteOnce  # Access mode for the PVC
     storage: 10Gi  # Storage size for the PVC
-    storageClassName: odf-nvme-2-replicas  # Storage class name for the PVC
+    storageClassName: ocs-storagecluster-ceph-rbd  # Storage class name for the PVC
     volumeMode: Filesystem  # Volume mode for the PVC
 
 deployment:
@@ -98,19 +98,18 @@ vm:
     size: medium  # Size for the Windows VM
     running: true  # Initial running state of the VM
     installationCdromUrl: 'http://example.com/win2022.iso'  # URL for the installation CDROM
-    installationCdromStorageClass: odf-nvme-2-replicas  # Storage class for the installation CDROM
+    installationCdromStorageClass: ocs-storagecluster-ceph-rbd-virtualization  # Storage class for the installation CDROM
     installationCdromStorage: 20Gi  # Storage size for the installation CDROM
-    rootDiskStorageClass: vm-odf-hdd-3-replicas  # Storage class for the root disk
+    rootDiskStorageClass: ocs-storagecluster-ceph-rbd-virtualization  # Storage class for the root disk
     rootDiskStorage: 120Gi  # Storage size for the root disk
     cpuCores: 4  # Number of CPU cores for the VM
     cpuSockets: 1  # Number of CPU sockets for the VM
     cpuThreads: 1  # Number of CPU threads for the VM
     memory: 16Gi  # Amount of memory for the VM
-    windowsDriversDiskImage: 'registry.redhat.io/container-native-virtualization/virtio-win-rhel9@sha256:a8d455491d6c1ff45c6d8d340aa804313ce5613a59f53c7f4a5fcb61c14cc9fc'  # Image for the Windows drivers disk
+    windowsDriversDiskImage: 'registry.redhat.io/container-native-virtualization/virtio-win-rhel9'  # Image for the Windows drivers disk
     machineType: pc-q35-rhel9.2.0  # Machine type for the VM
 
 route:
   wordpressFe:
     name: wordpress-fe  # Name of the Route for WordPress front-end
     host: wordpress-demo-test.apps.example.com  # Hostname for the WordPress front-end route
-
