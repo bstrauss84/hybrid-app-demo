@@ -62,27 +62,27 @@ service:
 pvc:
   redisData:
     name: redis-data-pvc  # Name of the PersistentVolumeClaim for Redis data
-    accessMode: ReadWriteOnce  # Access mode for the PVC
+    accessMode: ReadWriteMany  # Access mode for the PVC
     storage: 10Gi  # Storage size for the PVC
-    storageClassName: ocs-storagecluster-ceph-rbd  # Storage class name for the PVC
+    storageClassName: ocs-storagecluster-cephfs  # Storage class name for the PVC
     volumeMode: Filesystem  # Volume mode for the PVC
 
   wordpressPlugins:
     name: wordpress-plugins-pvc  # Name of the PersistentVolumeClaim for WordPress plugins
-    accessMode: ReadWriteOnce  # Access mode for the PVC
+    accessMode: ReadWriteMany  # Access mode for the PVC
     storage: 10Gi  # Storage size for the PVC
-    storageClassName: ocs-storagecluster-ceph-rbd  # Storage class name for the PVC
+    storageClassName: ocs-storagecluster-cephfs  # Storage class name for the PVC
     volumeMode: Filesystem  # Volume mode for the PVC
 
 deployment:
   redis:
     name: wordpress-cache  # Name of the Redis deployment
-    replicas: 1  # Number of replicas for Redis
+    replicas: 2  # Number of replicas for Redis
     image: "redis:latest"  # Docker image for Redis
 
   wordpressFe:
     name: wordpress-fe  # Name of the WordPress front-end deployment
-    replicas: 1  # Number of replicas for WordPress front-end
+    replicas: 2  # Number of replicas for WordPress front-end
     dbHost: wordpress-be  # Hostname for the WordPress database
     dbUser: wordpress_user  # Username for the WordPress database
     dbName: wordpress_db  # Database name for WordPress
