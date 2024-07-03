@@ -1,0 +1,2 @@
+# Avoid putting my site-specific files in Git
+apply-*.sh
