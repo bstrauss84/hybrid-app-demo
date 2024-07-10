@@ -1,8 +1,6 @@
 
 # Hybrid Application Deployment with OpenShift Virtualization
 
-![App Screenshot](https://github.com/bstrauss84/hybrid-app-demo/blob/main/resources/Screenshot%20from%202024-07-10%2012-53-28.png?raw=true)
-
 ## Overview
 
 This project demonstrates hosting a hybrid workload comprised of both containerized and VM-based components on OpenShift. It showcases how OpenShift Virtualization allows organizations to co-locate their container and VM workloads on the same platform. This capability is crucial for cases where workloads cannot be fully modernized, or modernization must occur in phases.
