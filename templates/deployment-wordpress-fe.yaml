@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    app.kubernetes.io/name: wordpress
     app.kubernetes.io/part-of: wordpress-demo
   name: {{ .Values.deployment.wordpressFe.name }}
   namespace: {{ .Release.Namespace }}

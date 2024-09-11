@@ -3,6 +3,7 @@ kind: VirtualMachine
 metadata:
   labels:
     app: wordpress-be
+    app.kubernetes.io/name: windows
     app.kubernetes.io/part-of: wordpress-demo
     vm.kubevirt.io/template: {{ .Values.vm.wordpressBe.template }}
     vm.kubevirt.io/template.namespace: openshift
